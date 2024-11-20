@@ -1,6 +1,6 @@
 package perso.api.crypto.repository.http.paprika.model
 
-data class InfosCoinDTO (
+data class InfosCoinJson (
     val id: String,
     val name: String,
     val symbol: String,

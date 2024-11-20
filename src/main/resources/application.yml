@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: crypto
+  datasource:
+    username: postgres
+    password: password
+    url: jdbc:postgresql://localhost:5433/crypto
+    driver-class-name: org.postgresql.Driver
+
