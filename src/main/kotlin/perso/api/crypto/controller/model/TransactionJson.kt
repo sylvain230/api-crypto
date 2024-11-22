@@ -4,6 +4,7 @@ import java.math.BigDecimal
 
 data class TransactionJson(
     val token: String = "",
-    val amount: BigDecimal = BigDecimal.ZERO
+    val amount: BigDecimal = BigDecimal.ZERO,
+    var date: String? = null
 ) {
 }

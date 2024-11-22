@@ -36,8 +36,13 @@ class TokenController(
     }
 
     @GetMapping("{id}/profit")
-    fun calculateProfit(@PathVariable id: String): ResultDto {
-        return tokenService.calculateProfit(id)
+    fun calculateProfitByToken(@PathVariable id: String): ResultDto {
+        return tokenService.calculateProfitByToken(id)
+    }
+    
+    @GetMapping("profit")
+    fun calculateProfit(): List<ResultDto> {
+        return tokenService.calculateProfit()
     }
 
     @GetMapping("{id}/historical")

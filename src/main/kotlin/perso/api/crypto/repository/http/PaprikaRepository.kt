@@ -28,7 +28,6 @@ class PaprikaRepository {
     }
 
     fun findPriceByTokenAndDate(id: String, date: String): DataHistoricalJson? {
-
         val response = paprikaApi.getPriceByIdAndDate(
             id,
             date,

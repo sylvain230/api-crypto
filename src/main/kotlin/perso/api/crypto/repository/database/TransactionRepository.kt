@@ -14,4 +14,8 @@ interface TransactionRepository : CrudRepository<Transaction, Int> {
     """)
     fun findByTokenId(@Param("tokenId") tokenId: String): List<Transaction>
 
+    @Query("""
+        select distinct tokenId token_id from Transaction tr
+    """)
+    fun findTokens(): List<String>
 }
