@@ -41,12 +41,17 @@ class TokenController(
     }
     
     @GetMapping("profit")
-    fun calculateProfit(): List<ResultDto> {
+    fun getProfitByCoin(): List<ResultDto> {
         return tokenService.calculateProfit()
     }
 
     @GetMapping("{id}/historical")
     fun getAveragePriceByTokenAndDate(@PathVariable id: String, @RequestParam date: String): DataHistoricalDto {
         return tokenService.findPriceByTokenAndDate(id, date)
+    }
+
+    @GetMapping("totalProfit")
+    fun getTotalProfit(): ProfitDto {
+        return tokenService.calculateProfitTotal()
     }
 }

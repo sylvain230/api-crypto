@@ -4,6 +4,6 @@ data class TokenJson(
     val id: String,
     val name: String,
     val rank: String,
-    val max_supply: Int,
+    val max_supply: Double,
     val quotes: QuotesJson
 )
