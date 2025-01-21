@@ -58,12 +58,20 @@ class TokenService(
             profit += (amountToday - amountWhenBuying)
             totalInvest += amountWhenBuying
         }
+
+        val profitPercent = profit.divide(totalInvest, 2, RoundingMode.HALF_UP).multiply(BigDecimal(100))
+
         return ResultDto (
             token = id,
-            profit = profit,
-            profitPercent = profit.divide(totalInvest, 2, RoundingMode.HALF_UP).multiply(BigDecimal(100)).toString(),
-            totalInvesti = totalInvest,
-            currentValue = totalAmountToday
+            profit = profit.setScale(2, RoundingMode.HALF_UP),
+            profitPercent =
+                when(profitPercent.signum()) {
+                    -1 -> " - $profitPercent %"
+                    1 -> " + $profitPercent %"
+                    else -> " + $profitPercent %"
+                },
+            totalInvesti = totalInvest.setScale(2, RoundingMode.HALF_UP),
+            currentValue = totalAmountToday.setScale(2, RoundingMode.HALF_UP)
         )
     }
 
@@ -81,8 +89,8 @@ class TokenService(
         val totalValueWallet = profitsByCoin.sumOf { it.currentValue }
 
         return ProfitDto(
-            totalInvesti = totalInvesti,
-            totalValueWallet = totalValueWallet,
+            totalInvesti = totalInvesti.setScale(2, RoundingMode.HALF_UP),
+            totalValueWallet = totalValueWallet.setScale(2, RoundingMode.HALF_UP),
             percent = "${totalInvesti.divide(totalValueWallet, 2 ,RoundingMode.HALF_UP).multiply((BigDecimal(100)))} %"
         )
     }

@@ -34,7 +34,6 @@ dependencies {
 	// Open API
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:$openStarterVersion")
 
-
 	implementation("org.springframework.boot:spring-boot-starter")
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
