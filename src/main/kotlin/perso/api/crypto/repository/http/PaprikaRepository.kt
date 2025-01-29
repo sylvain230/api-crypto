@@ -6,7 +6,7 @@ import perso.api.crypto.exception.CryptoException
 import perso.api.crypto.repository.http.paprika.model.DataHistoricalJson
 import perso.api.crypto.repository.http.paprika.model.InfosCoinJson
 import perso.api.crypto.repository.http.paprika.model.TokenJson
-import perso.api.crypto.tools.RetrofitInstanceApiCoinPaprika
+import perso.api.crypto.utils.RetrofitInstanceApiCoinPaprika
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -15,7 +15,11 @@ class PaprikaRepository {
     val paprikaApi: PaprikaApi = RetrofitInstanceApiCoinPaprika.getInstance().create(PaprikaApi::class.java)
 
     fun getInformationTokenById(id: String): InfosCoinJson? {
-        return paprikaApi.getInfosCoin(id).execute().body()
+        val response = paprikaApi.getInfosCoin(id).execute()
+        return when(response.isSuccessful) {
+            true -> response.body()
+            false -> throw CryptoException("Une erreur s'est produite à la récupération du token $id.")
+        }
     }
 
     fun getPriceTokensById(id: String): TokenJson? {
@@ -23,7 +27,7 @@ class PaprikaRepository {
         if (response.isSuccessful) {
             return response.body()
         } else {
-            throw CryptoException("Une erreur s'est produite à la récupération du token.")
+            throw CryptoException("Une erreur s'est produite à la récupération du token $id.")
         }
     }
 

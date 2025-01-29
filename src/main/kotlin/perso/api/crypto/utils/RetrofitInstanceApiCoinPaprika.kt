@@ -1,4 +1,4 @@
-package perso.api.crypto.tools
+package perso.api.crypto.utils
 
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor

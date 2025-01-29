@@ -2,6 +2,7 @@ package perso.api.crypto.service
 
 import org.springframework.stereotype.Service
 import perso.api.crypto.controller.model.TransactionJson
+import perso.api.crypto.exception.CryptoException
 import perso.api.crypto.model.*
 import perso.api.crypto.repository.database.TransactionRepository
 import perso.api.crypto.repository.database.model.Transaction

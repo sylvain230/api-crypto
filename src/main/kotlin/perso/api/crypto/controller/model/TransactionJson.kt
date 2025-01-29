@@ -6,5 +6,4 @@ data class TransactionJson(
     val token: String = "",
     val amount: BigDecimal = BigDecimal.ZERO,
     var date: String? = null
-) {
-}
+)

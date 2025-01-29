@@ -31,12 +31,15 @@ repositories {
 }
 
 dependencies {
+	val kotlinLogVersion = "3.0.5"
+
 	// Open API
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:$openStarterVersion")
 
 	implementation("org.springframework.boot:spring-boot-starter")
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+	implementation("io.github.microutils:kotlin-logging-jvm:$kotlinLogVersion")
 
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
@@ -47,6 +50,11 @@ dependencies {
 	implementation("com.squareup.retrofit2:converter-gson:$converterGsonVersion")
 	implementation ("com.squareup.okhttp3:logging-interceptor:$loggingInterceptorVersion")
 	implementation("org.postgresql:postgresql:$postgresqlVersion")
+
+	// Testing
+	testImplementation("io.mockk:mockk:1.13.16")
+	testImplementation("io.rest-assured:spring-mock-mvc:3.0.0")
+
 }
 
 tasks.withType<Test> {
