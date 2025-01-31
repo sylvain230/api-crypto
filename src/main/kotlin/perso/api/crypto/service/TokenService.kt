@@ -52,7 +52,13 @@ class TokenService(
         var profit = BigDecimal.ZERO
         var totalInvest = BigDecimal.ZERO
         var totalAmountToday = BigDecimal.ZERO
-        transactionRepository.findByTokenId(id).map {
+        val transactions = transactionRepository.findByTokenId(id)
+
+        if(transactions.isEmpty()) {
+            throw CryptoException("Pas de transaction pour le token $id.")
+        }
+
+        transactions.map {
             val amountWhenBuying = it.amount.multiply(it.price)
             val amountToday = it.amount.multiply(coin.price)
             totalAmountToday += amountToday

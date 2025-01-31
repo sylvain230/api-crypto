@@ -12,7 +12,7 @@ class ExceptionControllerAdvice {
     fun handleIllegalStateException(ex: IllegalStateException): ResponseEntity<ErrorMessageModel> {
 
         val errorMessage = ErrorMessageModel(
-            HttpStatus.NOT_FOUND.value(),
+            HttpStatus.BAD_REQUEST.value(),
             ex.message
         )
         return ResponseEntity(errorMessage, HttpStatus.BAD_REQUEST)
