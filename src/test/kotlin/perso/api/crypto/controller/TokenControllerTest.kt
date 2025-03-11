@@ -1,18 +1,19 @@
 package perso.api.crypto.controller
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import io.mockk.every
-import io.mockk.verify
+import okhttp3.mockwebserver.MockResponse
+import okhttp3.mockwebserver.MockWebServer
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.context.annotation.Import
-import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.get
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import perso.api.crypto.configuration.ControllerTestConfig
-import perso.api.crypto.model.CoinDto
-import perso.api.crypto.service.TokenService
+import java.io.File
+
 
 @WebMvcTest
 @Import(ControllerTestConfig::class)
@@ -22,23 +23,23 @@ class TokenControllerTest {
     lateinit var mockMvc: MockMvc
 
     @Autowired
-    lateinit var mapper: ObjectMapper
+    @Qualifier("mockServer")
+    lateinit var mockServer: MockWebServer
 
-    @Autowired
-    lateinit var tokenService: TokenService
+    private val btcBitcoinResult = File("src/test/resources/mock/apicrypto/btcBitcoin.json")
+    private val getTokenBtcBitcoinJson = File("src/test/resources/mock/apicoinpaprika/getTokenBtcBitcoin.json")
 
     @Test
-    fun testGetInformationToken() {
+    fun testGetPricesToken() {
 
-        every { tokenService.findInformationTokenById("btc-bitcoin") } returns CoinDto("btc-bitcoin")
+        val mockResponse = MockResponse()
+        mockResponse.setBody(getTokenBtcBitcoinJson.readText())
+        mockServer.enqueue(mockResponse)
 
-        mockMvc.get("/v1/tokens/btc-bitcoin/infos") {
-            content = MediaType.APPLICATION_JSON_VALUE
-        }.andExpect {
-            status { isOk() }
-            content { json(mapper.writeValueAsString(CoinDto("btc-bitcoin"))) }
-        }
+        val expected = btcBitcoinResult.readText()
 
-        verify { tokenService.findInformationTokenById("btc-bitcoin") }
+        mockMvc.perform(MockMvcRequestBuilders.get("/v1/tokens/btc-bitcoin/prices"))
+            .andExpect(status().isOk())
+            .andExpect(content().json(expected, true))
     }
 }

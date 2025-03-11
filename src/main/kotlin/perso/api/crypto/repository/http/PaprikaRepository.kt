@@ -11,8 +11,9 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 @Repository
-class PaprikaRepository {
+class PaprikaRepository(
     val paprikaApi: PaprikaApi = RetrofitInstanceApiCoinPaprika.getInstance().create(PaprikaApi::class.java)
+) {
 
     fun getInformationTokenById(id: String): InfosCoinJson? {
         val response = paprikaApi.getInfosCoin(id).execute()

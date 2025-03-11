@@ -39,7 +39,7 @@ class TokenService(
             val coin = findPricesTokenById(transaction.token)
             transactionRepository.save(Transaction(
                 tokenId = transaction.token,
-                price = coin.price.setScale(2),
+                price = coin.price.setScale(2, RoundingMode.HALF_UP),
                 amount = transaction.amount,
                 datetime = LocalDate.now(),
                 )

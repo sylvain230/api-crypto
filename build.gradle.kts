@@ -41,6 +41,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-validation:3.4.2")
 	implementation("io.github.microutils:kotlin-logging-jvm:$kotlinLogVersion")
+	implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.18.2")
 
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
@@ -55,6 +56,8 @@ dependencies {
 	// Testing
 	testImplementation("io.mockk:mockk:1.13.16")
 	testImplementation("io.rest-assured:spring-mock-mvc:3.0.0")
+	testImplementation("com.squareup.retrofit2:retrofit-mock:2.11.0")
+	testImplementation("com.squareup.okhttp3:mockwebserver:4.11.0")
 
 }
 

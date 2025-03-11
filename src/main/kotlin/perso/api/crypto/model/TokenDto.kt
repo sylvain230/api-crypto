@@ -5,7 +5,7 @@ import java.math.BigDecimal
 
 data class TokenDto(
     val name: String,
-    val rank: String,
+    val rank: Int,
     val athPrice: BigDecimal,
     val price: BigDecimal
 ) {
@@ -13,7 +13,7 @@ data class TokenDto(
         fun build(tokenJson: TokenJson): TokenDto {
             return TokenDto(
                 name = tokenJson.name,
-                rank = tokenJson.rank,
+                rank = Integer.valueOf(tokenJson.rank),
                 athPrice = tokenJson.quotes.USD.ath_price,
                 price = tokenJson.quotes.USD.price)
         }

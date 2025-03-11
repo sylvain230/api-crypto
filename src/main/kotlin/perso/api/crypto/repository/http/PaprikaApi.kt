@@ -16,5 +16,9 @@ interface PaprikaApi {
     fun getToken(@Path("id") id: String): Call<TokenJson>
 
     @GET("v1/tickers/{id}/historical")
-    fun getPriceByIdAndDate(@Path("id") id: String, @Query("start") start: String, @Query("end") end: String, @Query("interval") interval: String): Call<List<DataHistoricalJson>>
+    fun getPriceByIdAndDate(
+        @Path("id") id: String,
+        @Query("start") start: String,
+        @Query("end") end: String,
+        @Query("interval") interval: String): Call<List<DataHistoricalJson>>
 }
