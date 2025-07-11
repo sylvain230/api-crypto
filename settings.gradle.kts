@@ -1,1 +1,1 @@
-rootProject.name = "crypto"
+rootProject.name = "api-crypto"
