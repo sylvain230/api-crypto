@@ -10,11 +10,11 @@ WORKDIR /app
 # Copie les fichiers de build Gradle et le code source
 COPY gradlew .
 COPY gradle/wrapper/gradle-wrapper.jar gradle/wrapper/
+COPY gradle/wrapper/gradle-wrapper.properties gradle/wrapper/
 COPY build.gradle.kts settings.gradle.kts ./
 COPY src ./src
 
-# Utilise une image de base Java légère (OpenJDK 17 est courant pour Spring Boot)
-FROM openjdk:17-jdk-slim
+RUN chmod +x ./gradlew
 
 # Exécute la commande Gradle pour construire le JAR exécutable
 # Le --no-daemon est important pour les environnements CI/CD pour éviter les problèmes de processus persistants
