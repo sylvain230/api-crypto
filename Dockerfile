@@ -1,9 +1,6 @@
 # Étape 1 : Construire l'application (utilise un JDK complet pour la compilation)
 FROM openjdk:17-jdk-slim AS builder
 
-# Expose le port par défaut de Spring Boot (par exemple, 8080)
-EXPOSE 8080
-
 # Définit le répertoire de travail à l'intérieur du conteneur
 WORKDIR /app
 
@@ -23,10 +20,15 @@ RUN echo "Forcing rebuild at $(date)"
 # Le --no-daemon est important pour les environnements CI/CD pour éviter les problèmes de processus persistants
 RUN ./gradlew bootJar --no-daemon
 
-# Copie le JAR compilé (assurez-vous que le chemin et le nom sont corrects)
-# L'étape BUILDER_IMAGE_NAME doit compiler le JAR avant cette étape si vous utilisez un build multi-étapes
-# Pour un build simple avec votre Gradle Wrapper :
-COPY build/libs/api-crypto-0.0.1-SNAPSHOT.jar app.jar
+# Étape 2 : Créer l'image finale (utilise un JRE léger pour l'exécution)
+FROM openjdk:17-jre-slim
+
+# Expose le port par défaut de Spring Boot (par exemple, 8080)
+EXPOSE 8080
+
+# Copie le JAR compilé depuis l'étape de construction précédente ('builder')
+# Use the name you confirmed locally: api-crypto-0.0.1-SNAPSHOT.jar
+COPY --from=builder /app/build/libs/api-crypto-0.0.1-SNAPSHOT.jar app.jar
 
 # Commande pour démarrer l'application Spring Boot
 ENTRYPOINT ["java", "-jar", "app.jar"]
