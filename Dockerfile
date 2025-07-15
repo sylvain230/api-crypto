@@ -26,6 +26,9 @@ FROM openjdk:17-jre-slim
 # Expose le port par défaut de Spring Boot (par exemple, 8080)
 EXPOSE 8080
 
+# Définit le répertoire de travail dans l'image finale
+WORKDIR /app
+
 # Copie le JAR compilé depuis l'étape de construction précédente ('builder')
 # Use the name you confirmed locally: api-crypto-0.0.1-SNAPSHOT.jar
 COPY --from=builder /app/build/libs/api-crypto-0.0.1-SNAPSHOT.jar app.jar
