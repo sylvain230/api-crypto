@@ -14,6 +14,7 @@ COPY gradle/wrapper/gradle-wrapper.properties gradle/wrapper/
 COPY build.gradle.kts settings.gradle.kts ./
 COPY src ./src
 
+# Modification des droits
 RUN chmod +x ./gradlew
 
 # Exécute la commande Gradle pour construire le JAR exécutable
