@@ -21,7 +21,7 @@ RUN echo "Forcing rebuild at $(date)"
 RUN ./gradlew bootJar --no-daemon
 
 # Étape 2 : Créer l'image finale (utilise un JRE léger pour l'exécution)
-FROM openjdk:17-jre-slim
+FROM eclipse-temurin:17-jre-focal
 
 # Expose le port par défaut de Spring Boot (par exemple, 8080)
 EXPOSE 8080
