@@ -17,6 +17,8 @@ COPY src ./src
 # Modification des droits
 RUN chmod +x ./gradlew
 
+RUN echo "Forcing rebuild at $(date)"
+
 # Exécute la commande Gradle pour construire le JAR exécutable
 # Le --no-daemon est important pour les environnements CI/CD pour éviter les problèmes de processus persistants
 RUN ./gradlew bootJar --no-daemon
