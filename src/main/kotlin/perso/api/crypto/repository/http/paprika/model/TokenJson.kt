@@ -19,7 +19,7 @@ data class QuotesJson(
 )
 
 data class DataUsdJson(
-    val price: BigDecimal,
+    val price: Double,
     val ath_price: BigDecimal,
-    val percent_change_24h: BigDecimal
+    val percent_change_24h: Double
 )

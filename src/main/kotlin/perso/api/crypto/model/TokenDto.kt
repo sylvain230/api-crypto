@@ -7,7 +7,8 @@ data class TokenDto(
     val name: String,
     val rank: Int,
     val athPrice: BigDecimal,
-    val price: BigDecimal
+    val price: Double,
+    val percent24h: Double
 ) {
     companion object {
         fun build(tokenJson: TokenJson): TokenDto {
@@ -15,7 +16,9 @@ data class TokenDto(
                 name = tokenJson.name,
                 rank = Integer.valueOf(tokenJson.rank),
                 athPrice = tokenJson.quotes.USD.ath_price,
-                price = tokenJson.quotes.USD.price)
+                price = tokenJson.quotes.USD.price,
+                percent24h = tokenJson.quotes.USD.percent_change_24h
+            )
         }
     }
 }

@@ -26,25 +26,25 @@ class TokenService(
     }
 
     fun saveTransaction(transaction: TransactionJson) {
-        if(transaction.date != null) {
-            val dataHistorical = findPriceByTokenAndDate(transaction.token, transaction.date!!)
-            transactionRepository.save(Transaction(
-                tokenId = transaction.token,
-                price = dataHistorical.price.setScale(2, RoundingMode.HALF_UP),
-                amount = transaction.amount,
-                datetime = LocalDate.parse(transaction.date!!),
-                )
-            )
-        } else {
-            val coin = findPricesTokenById(transaction.token)
-            transactionRepository.save(Transaction(
-                tokenId = transaction.token,
-                price = coin.price.setScale(2, RoundingMode.HALF_UP),
-                amount = transaction.amount,
-                datetime = LocalDate.now(),
-                )
-            )
-        }
+//        if(transaction.date != null) {
+//            val dataHistorical = findPriceByTokenAndDate(transaction.token, transaction.date!!)
+//            transactionRepository.save(Transaction(
+//                tokenId = transaction.token,
+//                price = dataHistorical.price.setScale(2, RoundingMode.HALF_UP),
+//                amount = transaction.amount,
+//                datetime = LocalDate.parse(transaction.date!!),
+//                )
+//            )
+//        } else {
+//            val coin = findPricesTokenById(transaction.token)
+//            transactionRepository.save(Transaction(
+//                tokenId = transaction.token,
+//                price = coin.price.setScale(2, RoundingMode.HALF_UP),
+//                amount = transaction.amount,
+//                datetime = LocalDate.now(),
+//                )
+//            )
+//        }
     }
 
     fun calculateProfitByToken(id: String): ResultDto {
@@ -58,13 +58,15 @@ class TokenService(
             throw CryptoException("Pas de transaction pour le token $id.")
         }
 
-        transactions.map {
-            val amountWhenBuying = it.amount.multiply(it.price)
-            val amountToday = it.amount.multiply(coin.price)
-            totalAmountToday += amountToday
-            profit += (amountToday - amountWhenBuying)
-            totalInvest += amountWhenBuying
-        }
+//        transactions.map {
+//            val amountWhenBuying = it.amount.multiply(it.price)
+//            val amountToday = it.amount.multiply(coin.price)
+//            val amountWhenBuying = it.amount.multiply(it.price)
+//            val amountToday = it.amount.multiply(coin.price)
+//            totalAmountToday += amountToday
+//            profit += (amountToday - amountWhenBuying)
+//            totalInvest += amountWhenBuying
+//        }
 
         val profitPercent = profit.divide(totalInvest, 2, RoundingMode.HALF_UP).multiply(BigDecimal(100))
 

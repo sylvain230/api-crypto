@@ -1,7 +1,6 @@
 package perso.api.crypto.repository.database.model
 
 import jakarta.persistence.*
-import java.math.BigDecimal
 import java.time.LocalDate
 
 @Entity
@@ -16,11 +15,15 @@ data class Transaction(
     val tokenId: String,
 
     @Column(name = "amount")
-    val amount: BigDecimal,
+    val amount: Double,
 
     @Column(name = "datetime")
     val datetime: LocalDate,
 
     @Column(name = "price")
-    val price: BigDecimal
+    val price: Double,
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fk_user_id", nullable = false)
+    val appUser: AppUser
 )

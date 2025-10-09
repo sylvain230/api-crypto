@@ -1,3 +1,5 @@
+# Local
+
 spring:
   application:
     name: crypto
@@ -6,4 +8,26 @@ spring:
     password: password
     url: jdbc:postgresql://localhost:5433/crypto
     driver-class-name: org.postgresql.Driver
+
+jwt:
+  # Doit être une chaîne de caractères TRES longue et complexe ! (min 32 caractères)
+  secret: votre_cle_secrete_ultra_securisee_et_aleatoire_a_changer_en_prod
+  # La durée de validité du token (par exemple, 24 heures en millisecondes)
+  expiration: 86400000
+
+server:
+  servlet:
+    session:
+      cookie:
+        same-site: Strict
+# Render
+# postgresql://bdd_crypto_fh86_user:aZ82eXDi5fCFCo9tTDD2Bq6LpXMT9fra@dpg-d1r6a40dl3ps73f4b7d0-a/bdd_crypto_fh86
+#spring:
+#  application:
+#    name: crypto
+#  datasource:
+#    username: bdd_crypto_fh86_user
+#    password: aZ82eXDi5fCFCo9tTDD2Bq6LpXMT9fra
+#    url: postgresql://bdd_crypto_fh86_user:aZ82eXDi5fCFCo9tTDD2Bq6LpXMT9fra@dpg-d1r6a40dl3ps73f4b7d0-a
+#    driver-class-name: org.postgresql.Driver
 
