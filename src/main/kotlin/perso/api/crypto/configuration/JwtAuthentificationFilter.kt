@@ -15,21 +15,22 @@ class JwtAuthentificationFilter(
     private val jwtService: JwtService,
     private val userDetailsService: CustomUserDetailsService
 ) : OncePerRequestFilter() { // Extension clé pour s'assurer que le filtre ne s'exécute qu'une fois par requête
+
+    private val COOKIE_NAME = "access_token"
+
     override fun doFilterInternal(
         request: HttpServletRequest,
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
-        // 1. Extraction de l'en-tête
-        val authHeader = request.getHeader("Authorization")
+        // 1. Extraction du jeton depuis les cookies
+        val jwtToken = extractTokenFromCookie(request)
 
-        // Si l'en-tête est manquante ou ne commence pas par Bearer, on passe la main.
-        if(authHeader.isNullOrEmpty() || !authHeader.startsWith("Bearer ")) {
+        // Si aucun jeton n'est trouvé dans le cookie, on passe la main.
+        if (jwtToken.isNullOrEmpty()) {
             filterChain.doFilter(request, response)
             return
         }
-
-        val jwtToken = authHeader.substring(7)
 
         // 2. Validation du token et extraction de l'ID
         val userId = jwtService.validateTokenAndExtractUsername(token = jwtToken)
@@ -57,5 +58,21 @@ class JwtAuthentificationFilter(
 
         // On continue la chaîne de filtres (très important !)
         filterChain.doFilter(request, response)
+    }
+
+    /**
+     * Nouvelle fonction pour rechercher le JWT dans les cookies de la requête.
+     */
+    private fun extractTokenFromCookie(request: HttpServletRequest): String? {
+        // Récupère le tableau des cookies de la requête
+        val cookies = request.cookies
+
+        // Si le tableau est null ou vide, on retourne null
+        if (cookies.isNullOrEmpty()) {
+            return null
+        }
+
+        // Recherche le cookie par son nom et retourne sa valeur
+        return cookies.find { it.name == COOKIE_NAME }?.value
     }
 }

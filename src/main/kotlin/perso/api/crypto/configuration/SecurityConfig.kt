@@ -7,9 +7,7 @@ import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
-import org.springframework.security.config.annotation.web.builders.WebSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -74,5 +72,14 @@ class SecurityConfig(
     fun authentificationManager(config: AuthenticationConfiguration): AuthenticationManager {
         // Cette méthode demande à Spring de fournir l'implémentation standard.
         return config.authenticationManager
+    }
+
+    // Vous devez aussi vous assurer que le DaoAuthenticationProvider est bien configuré.
+    @Bean
+    fun daoAuthenticationProvider(): DaoAuthenticationProvider {
+        val provider = DaoAuthenticationProvider()
+        provider.setPasswordEncoder(passwordEncoder)
+        provider.setUserDetailsService(userDetailsService)
+        return provider
     }
 }

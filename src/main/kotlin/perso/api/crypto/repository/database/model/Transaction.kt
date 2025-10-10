@@ -2,6 +2,7 @@ package perso.api.crypto.repository.database.model
 
 import jakarta.persistence.*
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 @Entity
 @Table(name = "transaction")
@@ -18,7 +19,7 @@ data class Transaction(
     val amount: Double,
 
     @Column(name = "datetime")
-    val datetime: LocalDate,
+    val datetime: LocalDateTime,
 
     @Column(name = "price")
     val price: Double,

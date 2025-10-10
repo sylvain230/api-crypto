@@ -11,8 +11,7 @@ import perso.api.crypto.repository.database.model.AppUser
 @Service
 class UserService(
     private val userRepository: UserRepository,
-    private val passwordEncoder: PasswordEncoder,
-    private val jwtService: JwtService
+    private val passwordEncoder: PasswordEncoder
 ) {
     fun findByUsernameAndPassword(loginRequest: LoginRequest): LoginResponse {
         val user = userRepository.findByUsername(loginRequest.username)
@@ -20,8 +19,7 @@ class UserService(
 
         if(passwordEncoder.matches(loginRequest.password, user.passwordHash)) {
             return LoginResponse(
-                userId = user.id,
-                token = jwtService.generateToken(user.id)
+                userId = user.id
             )
         } else {
             throw RuntimeException("Nom d'utilisateur ou mot de passe incorrect.")

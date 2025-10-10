@@ -24,11 +24,10 @@ class ResumeService(
         }
 
         mapMontantByCypto.forEach {
-
             val infoToken = tokenService.findPricesTokenById(it.key)
             result.add(
                 CryptoAssetJson(
-                    id = userId,
+                    id = "${userId}_${it.key}",
                     name = it.key,
                     amount = it.value,
                     usdValue = infoToken.price * it.value,
