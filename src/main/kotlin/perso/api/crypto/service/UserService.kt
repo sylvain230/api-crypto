@@ -2,9 +2,9 @@ package perso.api.crypto.service
 
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
-import perso.api.crypto.model.LoginRequest
-import perso.api.crypto.model.LoginResponse
-import perso.api.crypto.model.RegisterRequestDto
+import perso.api.crypto.model.auth.LoginRequest
+import perso.api.crypto.model.auth.LoginResponse
+import perso.api.crypto.model.auth.RegisterRequestDto
 import perso.api.crypto.repository.database.UserRepository
 import perso.api.crypto.repository.database.model.AppUser
 

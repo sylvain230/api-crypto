@@ -23,20 +23,8 @@ class TokenController(
     ])
     @GetMapping("{id}/infos",
         produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun getInformationToken(@PathVariable id: String): CoinDto {
-        return tokenService.findInformationTokenById(id)
-    }
-
-    @Operation(summary = "Valeur d'un token", description = "Retourne la valeur d'un token, son rang, son nom, son ath")
-    @ApiResponses(value = [
-        ApiResponse(responseCode = "200", description = "Token trouvé"),
-        ApiResponse(responseCode = "404", description = "Token non trouvé"),
-        ApiResponse(responseCode = "500", description = "Erreur interne")
-    ])
-    @GetMapping("{id}/prices",
-        produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun getPricesToken(@PathVariable id: String): TokenDto {
-        return tokenService.findPricesTokenById(id)
+    fun getDetailsInformationToken(@PathVariable id: String): TokenDetailsDto {
+        return tokenService.getDetailsInformationTokenById(id)
     }
 
     @Operation(summary = "Ajouter une transaction", description = "Permet d'enregistrer une transaction effectuée")
@@ -72,16 +60,16 @@ class TokenController(
         return tokenService.calculateProfit()
     }
 
-    @Operation(summary = "Détail d'un token par date", description = "Retourne la valeur d'un token pour une date donnée. Ne fonctionne que pour 1 an d'historique")
-    @ApiResponses(value = [
-        ApiResponse(responseCode = "200", description = "Token trouvé"),
-        ApiResponse(responseCode = "404", description = "Token non trouvé"),
-        ApiResponse(responseCode = "500", description = "Erreur interne")
-    ])
-    @GetMapping("{id}/historical")
-    fun getAveragePriceByTokenAndDate(@PathVariable id: String, @RequestParam date: String): DataHistoricalDto {
-        return tokenService.findPriceByTokenAndDate(id, date)
-    }
+//    @Operation(summary = "Détail d'un token par date", description = "Retourne la valeur d'un token pour une date donnée. Ne fonctionne que pour 1 an d'historique")
+//    @ApiResponses(value = [
+//        ApiResponse(responseCode = "200", description = "Token trouvé"),
+//        ApiResponse(responseCode = "404", description = "Token non trouvé"),
+//        ApiResponse(responseCode = "500", description = "Erreur interne")
+//    ])
+//    @GetMapping("{id}/historical")
+//    fun getAveragePriceByTokenAndDate(@PathVariable id: String, @RequestParam date: String): DataHistoricalDto {
+//        return tokenService.findPriceByTokenAndDate(id, date)
+//    }
 
     @Operation(summary = "Profit total", description = "Calcul et affiche le profit total effectué sur l'ensemble des tokens")
     @ApiResponses(value = [

@@ -1,28 +1,39 @@
 package perso.api.crypto.service
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.stereotype.Service
 import perso.api.crypto.controller.model.TransactionJson
 import perso.api.crypto.exception.CryptoException
-import perso.api.crypto.model.*
+import perso.api.crypto.model.MarketChartWithLocalDate
+import perso.api.crypto.model.ProfitDto
+import perso.api.crypto.model.ResultDto
+import perso.api.crypto.model.TokenDetailsDto
 import perso.api.crypto.repository.database.TransactionRepository
-import perso.api.crypto.repository.database.model.Transaction
-import perso.api.crypto.repository.http.PaprikaRepository
+import perso.api.crypto.repository.http.CoinGeckoRepository
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.time.LocalDate
 
 @Service
 class TokenService(
-    private val paprikaRepository: PaprikaRepository,
-    private val transactionRepository: TransactionRepository
+    private val coinGeckoRepository: CoinGeckoRepository,
+    private val transactionRepository: TransactionRepository,
+    private val historicalDataService: HistoricalDataService,
+    private val mapper: ObjectMapper
 ) {
 
-    fun findInformationTokenById(id: String): CoinDto {
-        return CoinDto.build(infosCoinJson = paprikaRepository.getInformationTokenById(id)!!)
+    fun getDetailsInformationTokenById(id: String): TokenDetailsDto {
+        return TokenDetailsDto.build(coinDetailsJson = coinGeckoRepository.getInformationTokenById(id)!!)
     }
 
-    fun findPricesTokenById(id: String) : TokenDto {
-        return TokenDto.build(tokenJson = paprikaRepository.getPriceTokensById(id)!!)
+    fun getSimpleInformationsTokenByIds(ids: String): List<TokenDetailsDto> {
+        return TokenDetailsDto.buildSimple(maptokensJson = coinGeckoRepository.getPriceTokensById(ids)!!)
+    }
+
+    fun findPriceByTokenAndDate(tokenId: String, date: LocalDate): Double? {
+        val historical = historicalDataService.findDataById(tokenId)?.historical ?: return null
+        val marketChart = mapper.readValue(historical, MarketChartWithLocalDate::class.java)
+        return marketChart.prices.find { it.date == date }?.price
     }
 
     fun saveTransaction(transaction: TransactionJson) {
@@ -48,7 +59,7 @@ class TokenService(
     }
 
     fun calculateProfitByToken(id: String): ResultDto {
-        val coin = findPricesTokenById(id)
+        val coin = getDetailsInformationTokenById(id)
         var profit = BigDecimal.ZERO
         var totalInvest = BigDecimal.ZERO
         var totalAmountToday = BigDecimal.ZERO
@@ -84,9 +95,9 @@ class TokenService(
         )
     }
 
-    fun findPriceByTokenAndDate(id: String, date: String): DataHistoricalDto {
-        return DataHistoricalDto.build(dataHistoricalJson = paprikaRepository.findPriceByTokenAndDate(id, date)!!)
-    }
+//    fun findPriceByTokenAndDate(id: String, date: String): DataHistoricalDto {
+//        return DataHistoricalDto.build(dataHistoricalJson = paprikaRepository.findPriceByTokenAndDate(id, date)!!)
+//    }
 
     fun calculateProfit(): List<ResultDto> {
         return transactionRepository.findTokens().map { calculateProfitByToken(it) }
@@ -103,4 +114,5 @@ class TokenService(
             percent = "${totalInvesti.divide(totalValueWallet, 2 ,RoundingMode.HALF_UP).multiply((BigDecimal(100)))} %"
         )
     }
+
 }

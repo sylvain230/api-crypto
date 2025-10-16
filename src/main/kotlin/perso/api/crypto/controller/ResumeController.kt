@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import perso.api.crypto.controller.model.ChartDataPointJson
 import perso.api.crypto.controller.model.CryptoAssetJson
 import perso.api.crypto.service.ResumeService
 
@@ -15,7 +16,12 @@ class ResumeController(
 ) {
 
     @GetMapping("{id}", produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun getResumeAssetesByUserId(@PathVariable id : String): List<CryptoAssetJson> {
-        return resumeService.getResumeCryptoByUserId(id)
+    fun getResumeAssetsByUserId(@PathVariable id : String): List<CryptoAssetJson> {
+        return CryptoAssetJson.buildList(resumeService.getResumeCryptoByUserId(id))
+    }
+
+    @GetMapping("chart/user/{id}", produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun getHistoryUser(@PathVariable id: String): List<ChartDataPointJson> {
+        return ChartDataPointJson.buildList(resumeService.getPortfolioHistoryByUserId(id))
     }
 }

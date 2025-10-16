@@ -1,7 +1,6 @@
 package perso.api.crypto.repository.database.model
 
 import jakarta.persistence.*
-import java.time.LocalDate
 import java.time.LocalDateTime
 
 @Entity

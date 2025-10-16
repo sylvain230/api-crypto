@@ -6,8 +6,6 @@ import okhttp3.mockwebserver.MockWebServer
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import perso.api.crypto.repository.database.TransactionRepository
-import perso.api.crypto.repository.http.PaprikaApi
-import perso.api.crypto.repository.http.PaprikaRepository
 import perso.api.crypto.service.TokenService
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

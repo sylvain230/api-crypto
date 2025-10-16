@@ -1,4 +1,4 @@
-package perso.api.crypto.model
+package perso.api.crypto.model.auth
 
 data class LoginResponse(
     val userId: Long,
