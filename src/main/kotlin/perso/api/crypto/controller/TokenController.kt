@@ -27,17 +27,6 @@ class TokenController(
         return tokenService.getDetailsInformationTokenById(id)
     }
 
-    @Operation(summary = "Ajouter une transaction", description = "Permet d'enregistrer une transaction effectuée")
-    @ApiResponses(value = [
-        ApiResponse(responseCode = "200", description = "Token trouvé"),
-        ApiResponse(responseCode = "404", description = "Token non trouvé"),
-        ApiResponse(responseCode = "500", description = "Erreur interne")
-    ])
-    @PostMapping("/transaction")
-    fun postAddTransaction(@RequestBody transaction: TransactionJson) {
-        return tokenService.saveTransaction(transaction)
-    }
-
     @Operation(summary = "Calcul du profit par token", description = "Retourne le profit effectué pour chaque token")
     @ApiResponses(value = [
         ApiResponse(responseCode = "200", description = "Token trouvé"),

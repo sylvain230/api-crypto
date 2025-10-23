@@ -10,7 +10,7 @@ import retrofit2.http.Query
 
 interface CoinGeckoApi {
 
-    @GET("api/v3/coin/{id}")
+    @GET("api/v3/coins/{id}")
     fun getCoinDetails(@Path("id") id: String): Call<CoinDetailsJson>
 
     @GET("api/v3/simple/price")

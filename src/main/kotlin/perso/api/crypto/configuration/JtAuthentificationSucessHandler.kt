@@ -20,6 +20,7 @@ class JwtAuthenticationSuccessHandler(
         // 2. Créer et configurer le Cookie HTTP-Only
         val authCookie = Cookie("access_token", jwtToken).apply {
             isHttpOnly = true
+            secure = true
             maxAge = (jwtProperties.expiration / 1000).toInt()
             path = "/"
         }

@@ -19,7 +19,7 @@ class CustomUserDetailsService(
 
         // 2. Conversion/Mapping vers l'objet standard de Spring Security
         val appUserDetails = User(
-            user.username,
+            user.id.toString(),
             user.passwordHash,
             emptyList()
         )

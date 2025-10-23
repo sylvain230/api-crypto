@@ -1,10 +1,11 @@
 package perso.api.crypto.service
 
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import perso.api.crypto.model.ChartDataPointDto
 import perso.api.crypto.model.CryptoAssetDto
 import perso.api.crypto.repository.database.TransactionRepository
-import java.time.LocalDateTime
+import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 @Service
@@ -13,7 +14,8 @@ class ResumeService(
     private val tokenService: TokenService
 ) {
 
-    fun getResumeCryptoByUserId(userId: String): List<CryptoAssetDto> {
+    fun getResumeCryptoByUserId(): List<CryptoAssetDto> {
+        val userId = SecurityContextHolder.getContext().authentication.name
         val result: MutableList<CryptoAssetDto> = mutableListOf()
         val transactionsByUserId = transactionRepository.findTransactionsByUserId(userId)
 
@@ -47,36 +49,54 @@ class ResumeService(
         return result
     }
 
-    fun getPortfolioHistoryByUserId(userId: String) : List<ChartDataPointDto> {
+    fun getPortfolioHistoryByUserId() : List<ChartDataPointDto> {
+        val userId = SecurityContextHolder.getContext().authentication.name
         val mapHolding = mutableMapOf<String, Double>()
-        val transactionsByUserId = transactionRepository.findTransactionsByUserId(userId)
-        val dailyChartPoints = mutableMapOf<String, ChartDataPointDto>()
+        val dailyChartPoints = mutableListOf<ChartDataPointDto>()
 
+        val transactionsByUserId = transactionRepository.findTransactionsByUserId(userId)
         if(transactionsByUserId.isEmpty()) return emptyList()
 
-        transactionsByUserId.sortedBy { it.datetime }.forEach { transaction ->
+        val mapData = tokenService.findYearlyHistoricalPrices(transactionsByUserId.map { it.tokenId }.distinct())
+        val transactionByDate = transactionsByUserId.groupBy { it.datetime.toLocalDate() }
+        val today = LocalDate.now()
+        val startDate = today.minusYears(1)
+        var currentDate = startDate
 
-            mapHolding.merge(transaction.tokenId, transaction.amount) { oldBalance, newAmount -> oldBalance + newAmount }
+        while(!currentDate.isAfter(today)) {
+
+            // Mise à jour des balances si des transactions ont eu lieu ce jour
+            transactionByDate[currentDate]?.forEach { transaction ->
+                mapHolding.merge(transaction.tokenId, transaction.amount) { oldBalance, newAmount -> oldBalance + newAmount }
+            }
+
+            // Calculer la valeur totale du portefeuille à la fin de cette journée
             var cumulativePortfolioValue = 0.0
 
             mapHolding.forEach { (tokenId, balance) ->
-                val historicalPrice = tokenService.findPriceByTokenAndDate(tokenId, transaction.datetime.toLocalDate())
-                 cumulativePortfolioValue += historicalPrice?.times(balance) ?: 0.0
-            }
-            val dateKey = formatToDayString(transaction.datetime)
+                // Récupère le prix pour ce token à cette date spécifique
+                val historicalPrice = mapData[tokenId]?.get(currentDate)
 
-            val finalPointForDate = ChartDataPointDto(
-                date = dateKey,
-                value = cumulativePortfolioValue,
+                cumulativePortfolioValue += historicalPrice?.times(balance) ?: 0.0
+            }
+
+            // Ajouter le point de données (sauf si c'est la première date et la valeur est 0)
+            dailyChartPoints.add(
+                ChartDataPointDto(
+                    date = formatToDayString(currentDate), // Assurez-vous que formatToDayString est précis
+                    value = cumulativePortfolioValue
+                )
             )
 
-            dailyChartPoints[dateKey] = finalPointForDate
+            // Passer au jour suivant
+            currentDate = currentDate.plusDays(1)
         }
-        return dailyChartPoints.values.toList()
+
+        return dailyChartPoints
     }
 
-    fun formatToDayString(dateTime: LocalDateTime): String {
+    fun formatToDayString(dateTime: LocalDate): String {
         // Utilisez un formateur qui enlève l'heure, ex: dd/MM/yyyy
-        return dateTime.toLocalDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+        return dateTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
     }
 }

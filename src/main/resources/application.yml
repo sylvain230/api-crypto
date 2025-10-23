@@ -23,7 +23,7 @@ server:
   servlet:
     session:
       cookie:
-        same-site: Strict
+        same-site: Lax
 
 logging:
   level:

@@ -19,8 +19,8 @@ data class HistoricalData (
 
     @Type(JsonType::class)
     @Column(name = "historical", columnDefinition = "jsonb")
-    val historical: String,
+    var historical: String,
 
     @Column(name = "last_updated")
-    val lastUpdated: LocalDateTime = LocalDateTime.now(),
+    var lastUpdated: LocalDateTime = LocalDateTime.now(),
 )

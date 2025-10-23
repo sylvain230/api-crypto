@@ -36,26 +36,18 @@ class TokenService(
         return marketChart.prices.find { it.date == date }?.price
     }
 
-    fun saveTransaction(transaction: TransactionJson) {
-//        if(transaction.date != null) {
-//            val dataHistorical = findPriceByTokenAndDate(transaction.token, transaction.date!!)
-//            transactionRepository.save(Transaction(
-//                tokenId = transaction.token,
-//                price = dataHistorical.price.setScale(2, RoundingMode.HALF_UP),
-//                amount = transaction.amount,
-//                datetime = LocalDate.parse(transaction.date!!),
-//                )
-//            )
-//        } else {
-//            val coin = findPricesTokenById(transaction.token)
-//            transactionRepository.save(Transaction(
-//                tokenId = transaction.token,
-//                price = coin.price.setScale(2, RoundingMode.HALF_UP),
-//                amount = transaction.amount,
-//                datetime = LocalDate.now(),
-//                )
-//            )
-//        }
+    fun findYearlyHistoricalPrices(tokenIds: List<String>): Map<String,Map<LocalDate, Double>> {
+        val mapTokenPrices :MutableMap<String,Map<LocalDate, Double>> = mutableMapOf()
+        tokenIds.forEach { token ->
+            val historical = historicalDataService.findDataById(token)?.historical
+            val marketChart = mapper.readValue(historical, MarketChartWithLocalDate::class.java)
+            val mapDatePrice: MutableMap<LocalDate, Double> = mutableMapOf()
+            mapTokenPrices[token] = mapDatePrice
+            marketChart.prices.sortedBy { it.date }.forEach { currentPrice ->
+                mapDatePrice[currentPrice.date] = currentPrice.price
+            }
+        }
+        return mapTokenPrices
     }
 
     fun calculateProfitByToken(id: String): ResultDto {

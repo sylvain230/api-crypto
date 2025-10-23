@@ -2,6 +2,7 @@ package perso.api.crypto.service
 
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
+import perso.api.crypto.exception.CryptoException
 import perso.api.crypto.model.auth.LoginRequest
 import perso.api.crypto.model.auth.LoginResponse
 import perso.api.crypto.model.auth.RegisterRequestDto
@@ -13,6 +14,12 @@ class UserService(
     private val userRepository: UserRepository,
     private val passwordEncoder: PasswordEncoder
 ) {
+
+    fun findById(idUser: String): AppUser {
+        return userRepository.findById(idUser.toLong()).orElseThrow {
+            CryptoException("IdUser invalide.")
+        }
+    }
     fun findByUsernameAndPassword(loginRequest: LoginRequest): LoginResponse {
         val user = userRepository.findByUsername(loginRequest.username)
             ?: throw RuntimeException("Nom d'utilisateur ou mot de passe incorrect.")

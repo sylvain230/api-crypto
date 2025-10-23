@@ -19,8 +19,6 @@ class HistoricalDataService(
     private val gson: Gson
 ) {
 
-
-
     fun findDataById(tokenId: String): HistoricalData? {
         val historicalData = historicalDataRepository.findByTokenId(tokenId)
 
@@ -31,10 +29,16 @@ class HistoricalDataService(
        return if(isCacheExpired) {
             val marketChart = coinGeckoRepository.getMarketChart(id = tokenId)
             val marketChatWithLocalDate = marketChart?.timestampToLocalDate(marketChart)
-            historicalDataRepository.save(HistoricalData(
-                tokenId = tokenId,
-                historical = gson.toJson(marketChatWithLocalDate)
-            ))
+            if(historicalData == null) {
+                historicalDataRepository.save(HistoricalData(
+                    tokenId = tokenId,
+                    historical = gson.toJson(marketChatWithLocalDate)
+                ))
+            } else {
+                historicalData.historical = gson.toJson(marketChatWithLocalDate)
+                historicalData.lastUpdated = LocalDateTime.now()
+                historicalDataRepository.save(historicalData)
+            }
         } else {
             historicalData
         }
