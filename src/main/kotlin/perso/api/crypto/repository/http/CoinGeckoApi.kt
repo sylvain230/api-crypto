@@ -1,6 +1,7 @@
 package perso.api.crypto.repository.http
 
 import perso.api.crypto.repository.http.model.coingecko.CoinDetailsJson
+import perso.api.crypto.repository.http.model.coingecko.HistoryJson
 import perso.api.crypto.repository.http.model.coingecko.MarketChartJson
 import perso.api.crypto.repository.http.model.coingecko.TokenJson
 import retrofit2.Call
@@ -27,4 +28,10 @@ interface CoinGeckoApi {
         @Query("days") days: Int = 365,
         @Query("interval") interval: String = "daily"
     ): Call<MarketChartJson>
+
+    @GET("api/v3/coins/{id}/history")
+    fun getHistoryByTokenAndDate(
+        @Path("id") id: String,
+        @Query("date") date: String
+    ): Call<HistoryJson>
 }

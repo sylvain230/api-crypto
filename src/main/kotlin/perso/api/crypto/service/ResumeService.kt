@@ -6,6 +6,7 @@ import perso.api.crypto.model.ChartDataPointDto
 import perso.api.crypto.model.CryptoAssetDto
 import perso.api.crypto.repository.database.TransactionRepository
 import java.time.LocalDate
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 @Service
@@ -22,10 +23,10 @@ class ResumeService(
 
         val mapMontantByCypto: HashMap<String, Double> = HashMap()
         transactionsByUserId.forEach { transaction ->
-            if (!mapMontantByCypto.containsKey(transaction.tokenId)) {
-                mapMontantByCypto[transaction.tokenId] = 0.0
+            if (!mapMontantByCypto.containsKey(transaction.tokenMetadata.tokenId)) {
+                mapMontantByCypto[transaction.tokenMetadata.tokenId] = 0.0
             }
-            mapMontantByCypto[transaction.tokenId] = mapMontantByCypto[transaction.tokenId]!! + transaction.amount
+            mapMontantByCypto[transaction.tokenMetadata.tokenId] = mapMontantByCypto[transaction.tokenMetadata.tokenId]!! + transaction.amount
         }
 
         val tokens = tokenService.getSimpleInformationsTokenByIds(mapMontantByCypto.keys.joinToString(separator = ","))
@@ -57,17 +58,19 @@ class ResumeService(
         val transactionsByUserId = transactionRepository.findTransactionsByUserId(userId)
         if(transactionsByUserId.isEmpty()) return emptyList()
 
-        val mapData = tokenService.findYearlyHistoricalPrices(transactionsByUserId.map { it.tokenId }.distinct())
-        val transactionByDate = transactionsByUserId.groupBy { it.datetime.toLocalDate() }
-        val today = LocalDate.now()
-        val startDate = today.minusYears(1)
+        val mapData = tokenService.findYearlyHistoricalPrices(transactionsByUserId.map { it.tokenMetadata.tokenId }.distinct())
+
+        val appZone = ZoneId.of("Europe/Paris")
+        val transactionByDate = transactionsByUserId.groupBy { LocalDate.ofInstant(it.datetime, appZone)  }
+        val today = LocalDate.now(appZone)
+        val startDate = transactionsByUserId.first().datetime.atZone(appZone).toLocalDate()
         var currentDate = startDate
 
         while(!currentDate.isAfter(today)) {
 
             // Mise à jour des balances si des transactions ont eu lieu ce jour
             transactionByDate[currentDate]?.forEach { transaction ->
-                mapHolding.merge(transaction.tokenId, transaction.amount) { oldBalance, newAmount -> oldBalance + newAmount }
+                mapHolding.merge(transaction.tokenMetadata.tokenId, transaction.amount) { oldBalance, newAmount -> oldBalance + newAmount }
             }
 
             // Calculer la valeur totale du portefeuille à la fin de cette journée

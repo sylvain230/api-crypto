@@ -3,6 +3,7 @@ package perso.api.crypto.repository.http
 import org.springframework.stereotype.Repository
 import perso.api.crypto.exception.CryptoException
 import perso.api.crypto.repository.http.model.coingecko.CoinDetailsJson
+import perso.api.crypto.repository.http.model.coingecko.HistoryJson
 import perso.api.crypto.repository.http.model.coingecko.MarketChartJson
 import perso.api.crypto.repository.http.model.coingecko.TokenJson
 import perso.api.crypto.utils.RetrofitInstanceApiCoinGecko
@@ -16,7 +17,10 @@ class CoinGeckoRepository(
         val response = coinGeckoApi.getCoinDetails(id).execute()
         return when(response.isSuccessful) {
             true -> response.body()
-            false -> throw CryptoException("Une erreur s'est produite à la récupération du token $id.")
+            false -> {
+                val code = response.code()
+                throw CryptoException("Une erreur $code s'est produite à la récupération du token $id.")
+            }
         }
     }
 
@@ -25,7 +29,8 @@ class CoinGeckoRepository(
         if (response.isSuccessful) {
             return response.body()
         } else {
-            throw CryptoException("Une erreur s'est produite à la récupération du token $id.")
+            val code = response.code()
+            throw CryptoException("Une erreur $code s'est produite à la récupération du token $id.")
         }
     }
 
@@ -35,21 +40,21 @@ class CoinGeckoRepository(
         if(response.isSuccessful) {
             return response.body()
         } else {
-            throw CryptoException("Une erreur s'est produite à la récupération des données historiques de $id.")
+            val code = response.code()
+            throw CryptoException("Une erreur $code s'est produite à la récupération des données historiques de $id.")
         }
     }
 
-//    fun findPriceByTokenAndDate(id: String, date: String): DataHistoricalJson? {
-//        val response = coinGeckoApi.getPriceByIdAndDate(
-//            id,
-//            date,
-//            LocalDate.parse(date, DateTimeFormatter.ISO_LOCAL_DATE).plusDays(1).toString(),
-//            "1d"
-//        ).execute()
-//        if (response.isSuccessful) {
-//            return response.body()?.first()
-//        } else {
-//            throw CryptoException("Une erreur s'est produite à la récupération du prix du token $id au $date.")
-//        }
-//    }
+    fun getPriceByTokenAndDate(id: String, date: String): HistoryJson? {
+        val response = coinGeckoApi.getHistoryByTokenAndDate(
+            id,
+            date
+        ).execute()
+        if (response.isSuccessful) {
+            return response.body()
+        } else {
+            val code = response.code()
+            throw CryptoException("Une erreur $code s'est produite à la récupération du prix du token $id au $date.")
+        }
+    }
 }

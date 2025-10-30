@@ -10,12 +10,12 @@ import perso.api.crypto.repository.database.model.Transaction
 interface TransactionRepository : CrudRepository<Transaction, Int> {
 
     @Query("""
-        select tr from Transaction tr where tr.tokenId = :tokenId
+        select tr from Transaction tr where tr.tokenMetadata.tokenId = :tokenId
     """)
     fun findByTokenId(@Param("tokenId") tokenId: String): List<Transaction>
 
     @Query("""
-        select distinct tokenId token_id from Transaction tr
+        select distinct tr.tokenMetadata.symbol from Transaction tr
     """)
     fun findTokens(): List<String>
 

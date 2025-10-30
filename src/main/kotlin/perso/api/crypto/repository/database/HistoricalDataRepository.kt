@@ -10,7 +10,7 @@ import perso.api.crypto.repository.database.model.HistoricalData
 interface HistoricalDataRepository: CrudRepository<HistoricalData, Int> {
 
     @Query("""
-        select h from HistoricalData h where h.tokenId = :tokenId
+        select h from HistoricalData h where h.tokenMetadata.tokenId = :tokenId
     """)
     fun findByTokenId(@Param("tokenId") tokenId: String): HistoricalData?
 }

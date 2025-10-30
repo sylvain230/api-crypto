@@ -1,7 +1,7 @@
 package perso.api.crypto.repository.database.model
 
 import jakarta.persistence.*
-import java.time.LocalDateTime
+import java.time.Instant
 
 @Entity
 @Table(name = "transaction")
@@ -11,17 +11,18 @@ data class Transaction(
     @Column(name = "pk_transaction_id")
     var id: Long = 0,
 
-    @Column(name = "token_id")
-    val tokenId: String,
-
     @Column(name = "amount")
-    val amount: Double,
+    var amount: Double,
 
     @Column(name = "datetime")
-    val datetime: LocalDateTime,
+    var datetime: Instant,
 
     @Column(name = "price")
-    val price: Double,
+    var price: Double,
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "token_id", nullable = false)
+    val tokenMetadata: TokenMetadata,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fk_user_id", nullable = false)

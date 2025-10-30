@@ -14,8 +14,9 @@ data class HistoricalData (
     @Column(name = "pk_historical_data_id")
     var id: Long = 0,
 
-    @Column(name = "token_id")
-    val tokenId: String,
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "token_id", nullable = false)
+    val tokenMetadata: TokenMetadata,
 
     @Type(JsonType::class)
     @Column(name = "historical", columnDefinition = "jsonb")

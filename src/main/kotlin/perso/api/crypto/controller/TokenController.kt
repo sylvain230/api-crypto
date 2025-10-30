@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.*
+import perso.api.crypto.controller.model.TokenMetadataJson
 import perso.api.crypto.controller.model.TransactionJson
 import perso.api.crypto.model.*
 import perso.api.crypto.service.TokenService
@@ -69,5 +70,10 @@ class TokenController(
     @GetMapping("totalProfit")
     fun getTotalProfit(): ProfitDto {
         return tokenService.calculateProfitTotal()
+    }
+
+    @GetMapping("all")
+    fun getAllCoins(): List<TokenMetadataJson> {
+        return tokenService.getAllCoins().map { TokenMetadataJson.build(it) }
     }
 }

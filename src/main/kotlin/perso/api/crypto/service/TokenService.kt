@@ -4,23 +4,34 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.stereotype.Service
 import perso.api.crypto.controller.model.TransactionJson
 import perso.api.crypto.exception.CryptoException
-import perso.api.crypto.model.MarketChartWithLocalDate
-import perso.api.crypto.model.ProfitDto
-import perso.api.crypto.model.ResultDto
-import perso.api.crypto.model.TokenDetailsDto
+import perso.api.crypto.model.*
+import perso.api.crypto.repository.database.TokenMetadataRepository
 import perso.api.crypto.repository.database.TransactionRepository
 import perso.api.crypto.repository.http.CoinGeckoRepository
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @Service
 class TokenService(
     private val coinGeckoRepository: CoinGeckoRepository,
     private val transactionRepository: TransactionRepository,
     private val historicalDataService: HistoricalDataService,
+    private val tokenMetadataRepository: TokenMetadataRepository,
     private val mapper: ObjectMapper
 ) {
+
+    fun getAllCoins(): List<TokenMetadataDto> {
+        return tokenMetadataRepository.findAll().map { TokenMetadataDto.build(it) }
+    }
+
+    fun getPriceByTokenAndDate(id: String, date: LocalDate): Double {
+        val formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
+        val formattedDate = date.format(formatter)
+        return coinGeckoRepository.getPriceByTokenAndDate(id, formattedDate)?.market_data?.current_price?.get("usd")
+            ?: throw CryptoException("Prix USD non trouvé pour le token $id au $formattedDate.")
+    }
 
     fun getDetailsInformationTokenById(id: String): TokenDetailsDto {
         return TokenDetailsDto.build(coinDetailsJson = coinGeckoRepository.getInformationTokenById(id)!!)

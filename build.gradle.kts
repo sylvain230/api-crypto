@@ -47,10 +47,10 @@ dependencies {
 
 	implementation("org.springframework.boot:spring-boot-starter-security")
 	implementation("io.github.microutils:kotlin-logging-jvm:$kotlinLogVersion")
+	implementation("com.fasterxml.jackson.core:jackson-databind:2.18.2")
+	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.18.2")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.18.2")
-	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
-	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-	implementation("io.hypersistence:hypersistence-utils-hibernate-60:3.8.1")
+	implementation("io.hypersistence:hypersistence-utils-hibernate-63:3.8.1")
 	implementation ("com.google.code.gson:gson:2.10.1")
 
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
