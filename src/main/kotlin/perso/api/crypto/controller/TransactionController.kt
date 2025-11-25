@@ -27,7 +27,7 @@ class TransactionController(
         return transactionService.findAllTransactionsByUserId().map {
             TransactionJson(
                 token = it.token,
-                amount = it.amount,
+                amount = it.amount.toString(),
                 id = it.id,
                 dateTransaction = it.dateTime
             )

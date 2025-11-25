@@ -2,9 +2,13 @@ package perso.api.crypto.service
 
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
+import perso.api.crypto.exception.CryptoException
 import perso.api.crypto.model.ChartDataPointDto
 import perso.api.crypto.model.CryptoAssetDto
+import perso.api.crypto.model.ResumeDto
 import perso.api.crypto.repository.database.TransactionRepository
+import java.math.BigDecimal
+import java.math.RoundingMode
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -17,16 +21,18 @@ class ResumeService(
 
     fun getResumeCryptoByUserId(): List<CryptoAssetDto> {
         val userId = SecurityContextHolder.getContext().authentication.name
-        val result: MutableList<CryptoAssetDto> = mutableListOf()
+        val cryptoAssets: MutableList<CryptoAssetDto> = mutableListOf()
         val transactionsByUserId = transactionRepository.findTransactionsByUserId(userId)
+        var totalAmount = BigDecimal.ZERO
 
 
-        val mapMontantByCypto: HashMap<String, Double> = HashMap()
+        val mapMontantByCypto: HashMap<String, BigDecimal> = HashMap()
         transactionsByUserId.forEach { transaction ->
+            totalAmount = totalAmount.add(transaction.amount)
             if (!mapMontantByCypto.containsKey(transaction.tokenMetadata.tokenId)) {
-                mapMontantByCypto[transaction.tokenMetadata.tokenId] = 0.0
+                mapMontantByCypto[transaction.tokenMetadata.tokenId] = BigDecimal.ZERO
             }
-            mapMontantByCypto[transaction.tokenMetadata.tokenId] = mapMontantByCypto[transaction.tokenMetadata.tokenId]!! + transaction.amount
+            mapMontantByCypto[transaction.tokenMetadata.tokenId] = mapMontantByCypto[transaction.tokenMetadata.tokenId]!!.add(transaction.amount)
         }
 
         val tokens = tokenService.getSimpleInformationsTokenByIds(mapMontantByCypto.keys.joinToString(separator = ","))
@@ -35,24 +41,24 @@ class ResumeService(
         mapMontantByCypto.forEach { currentToken ->
             val infoToken = tokens.find { tokenInfo -> tokenInfo.name == currentToken.key }
             if (infoToken != null) {
-                result.add(
+                cryptoAssets.add(
                     CryptoAssetDto(
                         id = "${userId}_${currentToken.key}",
                         name = currentToken.key,
                         amount = currentToken.value,
                         usdValue = infoToken.price * currentToken.value,
-                        percentageOfPortfolio = 0.0,
+                        percentageOfPortfolio = currentToken.value.multiply(BigDecimal(100.0)).divide(totalAmount, 2, RoundingMode.HALF_UP).setScale(2),
                         trend24h = infoToken.percent24h
                     )
                 )
             }
         }
-        return result
+        return cryptoAssets
     }
 
     fun getPortfolioHistoryByUserId() : List<ChartDataPointDto> {
         val userId = SecurityContextHolder.getContext().authentication.name
-        val mapHolding = mutableMapOf<String, Double>()
+        val mapHolding = mutableMapOf<String, BigDecimal>()
         val dailyChartPoints = mutableListOf<ChartDataPointDto>()
 
         val transactionsByUserId = transactionRepository.findTransactionsByUserId(userId)
@@ -74,13 +80,13 @@ class ResumeService(
             }
 
             // Calculer la valeur totale du portefeuille à la fin de cette journée
-            var cumulativePortfolioValue = 0.0
+            var cumulativePortfolioValue = BigDecimal.ZERO
 
             mapHolding.forEach { (tokenId, balance) ->
                 // Récupère le prix pour ce token à cette date spécifique
                 val historicalPrice = mapData[tokenId]?.get(currentDate)
 
-                cumulativePortfolioValue += historicalPrice?.times(balance) ?: 0.0
+                cumulativePortfolioValue = cumulativePortfolioValue.add(historicalPrice?.multiply(balance) ?: BigDecimal.ZERO)
             }
 
             // Ajouter le point de données (sauf si c'est la première date et la valeur est 0)
@@ -101,5 +107,47 @@ class ResumeService(
     fun formatToDayString(dateTime: LocalDate): String {
         // Utilisez un formateur qui enlève l'heure, ex: dd/MM/yyyy
         return dateTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+    }
+
+    fun getGlobalResumeByUserId(): ResumeDto {
+        val userId = SecurityContextHolder.getContext().authentication.name
+        val transactions = transactionRepository.findTransactionsByUserId(userId)
+
+        if (transactions.isEmpty()) {
+            return ResumeDto(BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO)
+        }
+
+        val uniqueTokenIds = transactions.map { it.tokenMetadata.tokenId }.distinct()
+        val mapTokenPriceToday = uniqueTokenIds.associate { tokenId ->
+            tokenService.findPriceByTokenAndDate(tokenId, LocalDate.now()).let { price -> tokenId to price }
+        }
+
+        var totalInvest = BigDecimal.ZERO
+        var amountToday = BigDecimal.ZERO
+
+        transactions.forEach { transaction ->
+            val priceToday = mapTokenPriceToday[transaction.tokenMetadata.tokenId]
+
+            if(priceToday != null) {
+                totalInvest += transaction.amount.multiply(transaction.price)
+                amountToday += transaction.amount.multiply(priceToday)
+            }
+        }
+
+        if (totalInvest.compareTo(BigDecimal.ZERO) == 0) {
+            return ResumeDto(totalInvest, amountToday, BigDecimal.ZERO, BigDecimal.ZERO)
+        }
+
+        val amountWinOrloss = amountToday.subtract(totalInvest)
+        val percentWinOrLoss = amountWinOrloss
+            .multiply(BigDecimal(100))
+            .divide(totalInvest, 2, RoundingMode.HALF_UP)
+
+        return ResumeDto(
+            totalInvest = totalInvest,
+            amountToday = amountToday,
+            amountWinOrLoss = amountWinOrloss,
+            percentWinOrLoss = percentWinOrLoss
+        )
     }
 }

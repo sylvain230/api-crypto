@@ -6,5 +6,5 @@ data class HistoryJson(
 )
 
 data class MarkeDataJson(
-    val current_price: Map<String, Double>
+    val current_price: Map<String, String>
 )

@@ -1,6 +1,7 @@
 package perso.api.crypto.repository.database.model
 
 import jakarta.persistence.*
+import java.math.BigDecimal
 import java.time.Instant
 
 @Entity
@@ -12,13 +13,13 @@ data class Transaction(
     var id: Long = 0,
 
     @Column(name = "amount")
-    var amount: Double,
+    var amount: BigDecimal,
 
     @Column(name = "datetime")
     var datetime: Instant,
 
     @Column(name = "price")
-    var price: Double,
+    var price: BigDecimal,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "token_id", nullable = false)

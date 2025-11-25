@@ -37,7 +37,7 @@ class TransactionService(
                 Transaction(
                 tokenMetadata = tokenMetadata,
                 price = tokenService.getDetailsInformationTokenById(tokenMetadata.tokenId).price,
-                amount = transaction.amount,
+                amount = transaction.amount.toBigDecimal(),
                 datetime = transaction.dateTransaction,
                 appUser = userService.findById(idUser = idUser)
                 )
@@ -53,7 +53,7 @@ class TransactionService(
             CryptoException("Transaction avec ID ${transaction.id} non trouvée.")
         }
         currentTransaction.price = tokenService.getPriceByTokenAndDate(transaction.token, transaction.dateTransaction.atZone(ZoneId.of("Europe/Paris")).toLocalDate())
-        currentTransaction.amount = transaction.amount
+        currentTransaction.amount = transaction.amount.toBigDecimal()
         currentTransaction.datetime = transaction.dateTransaction
         return TransactionDto.build(transactionRepository.save(currentTransaction))
     }

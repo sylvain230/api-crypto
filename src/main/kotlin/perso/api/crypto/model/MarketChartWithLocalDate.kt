@@ -1,7 +1,7 @@
 package perso.api.crypto.model
 
+import java.math.BigDecimal
 import java.time.LocalDate
-import java.time.LocalDateTime
 
 data class MarketChartWithLocalDate(
     val prices: List<DailyData>,
@@ -10,5 +10,5 @@ data class MarketChartWithLocalDate(
 
 data class DailyData(
     val date: LocalDate,
-    val price: Double
+    val price: BigDecimal
 )

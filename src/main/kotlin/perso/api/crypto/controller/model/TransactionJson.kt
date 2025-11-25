@@ -8,7 +8,7 @@ import java.time.Instant
 data class TransactionJson(
     val id: Long,
     val token: String,
-    val amount: Double,
+    val amount: String,
     val dateTransaction: Instant
 ) {
     companion object {
@@ -17,7 +17,7 @@ data class TransactionJson(
             return TransactionJson(
                 id = transactionDto.id,
                 token = transactionDto.token,
-                amount = transactionDto.amount,
+                amount = transactionDto.amount.toString(),
                 dateTransaction = transactionDto.dateTime
             )
         }

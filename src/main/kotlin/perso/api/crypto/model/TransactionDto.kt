@@ -1,12 +1,13 @@
 package perso.api.crypto.model
 
 import perso.api.crypto.repository.database.model.Transaction
+import java.math.BigDecimal
 import java.time.Instant
 
 data class TransactionDto(
     val id: Long,
     val token: String,
-    val amount: Double,
+    val amount: BigDecimal,
     val dateTime: Instant
 ) {
     companion object {

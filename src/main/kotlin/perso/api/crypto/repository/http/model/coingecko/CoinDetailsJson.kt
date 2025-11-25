@@ -8,7 +8,7 @@ data class CoinDetailsJson(
 )
 
 class CurrentPrice(
-    val current_price: HashMap<String, Double>,
-    val ath: HashMap<String, Double>,
-    val price_change_percentage_24h: Double
+    val current_price: HashMap<String, String>,
+    val ath: HashMap<String, String>,
+    val price_change_percentage_24h: String
 )
